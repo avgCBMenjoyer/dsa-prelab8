@@ -51,3 +51,5 @@ struct node{
     }
     
 };
+
+int node::counter = 0;
