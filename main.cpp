@@ -62,7 +62,7 @@ void scalePacman(node* myPointer){
 
 }
 
-
+//execute mspacman
 int main(){
     node* myAck = pacman(3,3);
     scalePacman(myAck);
