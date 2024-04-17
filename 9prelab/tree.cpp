@@ -120,15 +120,14 @@ try
         tok(); // load peek token
 
         Tree * tree = eval_expr();
-        /*
+        
         cout << "```mermaid\ngraph TD\n"
              << "A(\"" << line << "\")\n"
              << "B(\"" << tree->expr() << "\")\n"
              << "A --> B\n"
              << "style A fill:#ded\n"
-             << "style B fill:#dde\n" */
-            cout << tree->edges() << "```\n---\n";
-            cout << tree->expr() << "\n";
+             << "style B fill:#dde\n" 
+            << tree->edges() << "```\n---\n";
 
         delete tree;
     }
@@ -176,31 +175,57 @@ string Tree::edges() const
 string Tree::expr() const
 {
     
-    
-    if(left->op.empty()){
+    if(left == nullptr && right == nullptr){
+        return val;
+    }
+
+    if(left->op.empty() && right->op.empty()){
         return left->val + " " + op + " " + right->val;        
     }
 
     string result;
     if(op == "^"){
         if(left->op != "^"){
-            cout << " ( " + left->expr() + " ) ";
+            cout << "( " << left->expr() << " ) ";
         }
+        else{
+            cout << left->expr() << " ";
+        }
+        cout << op << " ";
+        
         if(right->op != "^"){
-            cout << " ( " + right->expr() + " ) ";
+            
+            cout << "( " << right->expr() << " ) ";
+        }
+        else{
+            
+            cout << right->expr() << " ";
         }
 
 
     }
     else if(op == "*" || op == "/" || op == "%"){
         if(left->op == "+" || left->op == "-"){
-            cout << " ( " + left->expr() + " ) ";
+            cout << "( " + left->expr() + " ) ";
         }
+        else{
+            cout << left->expr() << " ";
+        }
+        cout << op << " ";
         if(right->op == "+" || right->op == "-"){
-            cout << " ( " + right->expr() + " ) ";
+            cout << "( " + right->expr() + " ) ";
+        }
+        else{
+            cout << right->expr() << " ";
         }
 
     }
+    else{
+        cout << left->expr() << " ";
+        cout << op << " ";
+        cout << right->expr() << " ";
+    }
+    
         
     
     return result;
