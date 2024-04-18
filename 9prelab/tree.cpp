@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include <cmath>
 
 using namespace std;
 
@@ -37,8 +38,19 @@ struct Tree
     string str() const;
     string edges() const;
     string expr() const;
+    double calc() const; //calculation
+    double opcode(double a, double b, string op) const; //individually handle operators
+    
 };
 
+
+void compare(Tree * myEx, string y) //check against RHS
+{
+    int myY = stoi(y);
+    cout << "Compare: ";
+    cout << (myEx->calc() == myY);
+    cout << "\n\n";
+} 
 
 Tree * eval_expr();
 
@@ -97,12 +109,25 @@ Tree * eval_expr()
             auto b = eval_term();
             result = new Tree(op, result, b);
         }
-        else if (peek.empty()) break;
+        else if (peek.empty()) {cout << "Result: " << result->calc() << "\n\n"; break;} //if no equal found
+        else if (peek == "=") { //if equal found, compare against RHS (if RHS does not exist then just return result)
+            tok();
+            if(peek.empty()){
+                cout << "Result: " << result->calc() << "\n\n";
+            }
+            else{
+                compare(result, tok());
+            }
+            break;
+            } // do not add past equal sign
         else if (peek == ")") { tok(); break; }
         else throw "bad operator [" + peek + "]";
     }
     return result;
 }
+
+
+
 
 int main()
 {
@@ -120,7 +145,7 @@ try
         tok(); // load peek token
 
         Tree * tree = eval_expr();
-        
+        /*
         cout << "```mermaid\ngraph TD\n"
              << "A(\"" << line << "\")\n"
              << "B(\"" << tree->expr() << "\")\n"
@@ -128,7 +153,8 @@ try
              << "style A fill:#ded\n"
              << "style B fill:#dde\n" 
             << tree->edges() << "```\n---\n";
-
+        */
+        
         delete tree;
     }
 }
@@ -231,3 +257,58 @@ string Tree::expr() const
     return result;
 
 }
+
+//INLAB 9
+double Tree::opcode(double a, double b, string op) const{
+    
+    if(op == "+"){
+        return a + b;
+    }
+    else if(op == "-"){
+        return a - b;
+    }
+    else if(op == "*"){
+        return a * b;
+    }
+    else if(op == "/"){
+        return a / b;
+    }
+    else if(op == "%"){
+        return int(a) % int(b);
+    }
+    else if(op == "^"){
+        double exp = pow(a, b);
+        return exp;
+    }
+    else{
+        return -1;
+    }
+}
+
+
+double Tree::calc() const{
+    if(left==nullptr && right==nullptr){
+        return stod(val);
+    }
+
+    if(left->op.empty() && right->op.empty()){
+        return opcode(stod(left->val), stod(right->val), op);        
+    }
+
+    double leftCal = 0, rightCal=0, result = 0;
+
+    if(left!=nullptr){
+        leftCal += left->calc();
+    }
+    
+    if(right!=nullptr){
+        rightCal += right->calc();
+    }
+
+    result = opcode(leftCal, rightCal, op);
+    
+
+    return result;
+
+}
+
