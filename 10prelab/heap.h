@@ -47,3 +47,5 @@ inline void HeapNode::valid() const
     if (left) left->valid();
     if (right) right->valid();
 }
+
+

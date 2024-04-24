@@ -9,7 +9,7 @@ int main()
 try
 {
     vector<int> v {1, 0, 5, 7, 9, 2, 4, 6, 8};
-
+    std::cout << "bhenchod";
     HeapNode heap(3);
 
     auto prn = [](int x, const HeapNode & h, string a)
@@ -26,7 +26,7 @@ try
         prn(x, heap, "push");
         heap.valid();
     }
-
+    
     while ( !heap.empty() )
     {
         int x = heap.pop();
