@@ -1,4 +1,5 @@
 #include <string>
+#include <stack>
 
 class HeapNode
 {
@@ -25,6 +26,62 @@ class HeapNode
 
         // helper function
         void heapify();
+
+        //iterator
+
+        class ListIterator   //https://www.internalpointers.com/post/writing-custom-iterators-modern-cpp
+    {
+        //Iterator Tags
+        using iterator_category = std::forward_iterator_tag;
+        using difference_type   = std::ptrdiff_t;
+        using value_type        = HeapNode;
+        using pointer           = value_type*;  // or also value_type*
+        using reference         = HeapNode&;  //reference returns payload of Node 
+
+        private:
+            pointer m_ptr;
+            stack<HeapNode*> myStack;
+        public:
+        ListIterator(pointer ptr) : m_ptr(ptr){}
+          reference operator*() const { return *m_ptr; }
+                 
+        pointer operator->() { return m_ptr; }
+
+        // Prefix increment
+        ListIterator& operator++() { 
+            if(m_ptr->left == nullptr && m_ptr->right == nullptr){
+                myStack.pop();
+                return *this;
+            }
+
+            if(m_ptr->left != nullptr){
+                
+                myStack.push((m_ptr->left));
+                m_ptr = m_ptr->left;
+                ++(*this);
+            }
+            else if(m_ptr->right != nullptr){
+
+                myStack.pop();
+                myStack.push((m_ptr->right));
+                m_ptr = m_ptr->right;
+                ++(*this);
+            }
+
+        }  
+
+        // Postfix increment
+        ListIterator operator++(int) { ListIterator tmp = *this; ++(*this); return tmp; }
+
+        friend bool operator== (const ListIterator& a, const ListIterator& b) { return a.m_ptr == b.m_ptr; };
+        friend bool operator!= (const ListIterator& a, const ListIterator& b) { return a.m_ptr != b.m_ptr; };
+        
+
+    };
+
+
+    ListIterator begin() {return ListIterator(this);}
+    ListIterator end() {return ListIterator(NULL);}
 };
 
 inline std::string HeapNode::edges() const
